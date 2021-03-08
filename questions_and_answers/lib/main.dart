@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'questao.dart';
-import 'respostas.dart';
+import 'resposta.dart';
 
 main() => runApp(PerguntaApp());
 
@@ -9,23 +9,37 @@ class _PerguntaAppState extends State<PerguntaApp> {
   var _perguntaSelecionada = 0;
   var appBar = 'Normal';
   //esse metodo, toda vez que for mudada, a build
-  //vai refazer toda a interface grafica
+  //vai refazer toda a interface grafica (na verdade não toda, mas vai buscar em toda, e mudar oque for necessario)
+  //o flutter é cirurgico nessa parte
   void _responder() {
     setState(() {
       _perguntaSelecionada = _perguntaSelecionada + 1;
-      appBar = 'Selecionada';
     });
-
-    print(_perguntaSelecionada);
   }
 
   @override
   Widget build(BuildContext context) {
-    final perguntas = [
-      'Qual é a sua cor favorita ?',
-      'Qual é o seu animal favorito ?'
+    final List<Map<String, Object>> perguntas = [
+      {
+        'texto': 'Qual é a sua cor favorita ?',
+        'respostas': ['Preto', 'Vermelho', 'Verde', 'Branco']
+      },
+      {
+        'texto': 'Qual seu animal favorito ?',
+        'respostas': ['Coelho', 'Cobra', 'Elefante', 'Leão']
+      },
+      {
+        'texto': 'Qual é o seu instruturo favorito ?',
+        'respostas': ['Maria', 'João', 'Leo', 'Pedro'],
+      }
     ];
+    List<String> respostas = perguntas[_perguntaSelecionada]['respostas'];
+    List<Widget> widgets = [];
+    for (var TextoResp in respostas) {
+      widgets.add(Resposta(TextoResp, _responder));
+    }
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: Scaffold(
             appBar: AppBar(
               title: Container(
@@ -35,22 +49,17 @@ class _PerguntaAppState extends State<PerguntaApp> {
                   textAlign: TextAlign.center,
                 ),
               ),
-              backgroundColor: Colors.purple,
+              backgroundColor: Colors.blue,
             ),
             body: Column(children: <Widget>[
-              Questao(perguntas[_perguntaSelecionada]),
-              RaisedButton(
-                child: Respostas('Resposta 1'),
-                onPressed: null,
-              ),
-              RaisedButton(
-                child: Respostas('Resposta 2'),
-                onPressed: null,
-              ),
-              RaisedButton(
-                child: Respostas('Resposta 3'),
-                onPressed: null,
-              )
+              Questao(perguntas[_perguntaSelecionada]['texto']),
+              ...widgets,
+              /*widgets[0],
+              widgets[1],
+              widgets[2],
+              widgets[3] 
+              
+              observe os três pontos ali em cima que substituem esse método*/
             ])));
   }
 }
